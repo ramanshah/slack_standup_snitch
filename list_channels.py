@@ -6,9 +6,10 @@
 # Usage: python3 list_channels.py < api_token.txt > input_channel.csv
 #        python3 list_channels.py < api_token.txt > output_channel.csv
 #
-# Remove all but two lines from each file, the header and the name of
-# the channels you want to monitor and write the report to,
-# respectively..
+# Remove all but two lines from each file: input_channel.csv should
+# have a header and the line for the file you want to
+# monitor. Similarly, output_channel.csv should have a header and the
+# line for the file you want to send the report to.
 
 import urllib.request
 import urllib.parse
