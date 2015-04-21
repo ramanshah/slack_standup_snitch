@@ -4,6 +4,9 @@
 # IDs.
 #
 # Usage: python3 list_users.py < api_token.txt > users.csv
+#
+# Typically you'll manually edit users.csv to pare the list down to
+# the active people you want to monitor.
 
 import urllib.request
 import urllib.parse
