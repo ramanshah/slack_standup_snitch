@@ -2,3 +2,4 @@ api_token.txt
 users.csv
 input_channel.csv
 output_channel.csv
+__pycache__/
