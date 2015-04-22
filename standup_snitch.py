@@ -49,20 +49,15 @@ with open(args.token_file) as token_file:
     token = token_file.read().strip()
 
 with open(args.input_channel_file) as input_channel_file:
-    input_reader = csv.DictReader(input_channel_file)
-    for row in input_reader:
-        # The last line is the one that survives
-        input_channel = row
+    # Take only the first line after the header
+    input_channel = next(csv.DictReader(input_channel_file))
 
 with open(args.output_channel_file) as output_channel_file:
-    output_reader = csv.DictReader(output_channel_file)
-    for row in output_reader:
-        # The last line is the one that survives
-        output_channel = row
+    # Take only the first line after the header
+    output_channel = next(csv.DictReader(output_channel_file))
 
 with open(args.user_file) as user_file:
-    user_reader = csv.DictReader(user_file)
-    users = [user for user in user_reader]
+    users = [user for user in csv.DictReader(user_file)]
 
 print(token)
 print(format_channel(input_channel))
