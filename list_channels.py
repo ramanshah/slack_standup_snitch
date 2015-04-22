@@ -32,4 +32,3 @@ if channel_list['ok']:
         channel_list_writer.writerow([channel['id'], channel['name']])
 else:
     raise Exception('Slack API returned error', channel_list['error'])
-mv
