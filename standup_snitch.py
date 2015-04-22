@@ -13,6 +13,10 @@
 #                                  -o output_channel.csv \
 #                                  -u users.csv
 
+import urllib.request
+import urllib.parse
+import json
+import time
 import datetime
 import csv
 import argparse
@@ -30,6 +34,48 @@ def format_user(user_dict):
                     '|',
                     user_dict['user_name'],
                     '>'])
+
+def get_message_history(token, channel, ts_start, ts_end):
+    # 1000 messages is the maximum allowed by the API.
+    arguments = urllib.parse.urlencode({'token': token,
+                                        'channel': channel,
+                                        'latest': ts_end,
+                                        'oldest': ts_start,
+                                        'count': 1000}).encode()
+    response = urllib.request.urlopen('https://slack.com/api/channels.history',
+                                      data = arguments)
+
+    history_raw = json.loads(response.read().decode())
+    history_processed = []
+
+    if history_raw['ok']:
+        for message in history_raw['messages']:
+            if message['type'] == 'message':
+                history_processed.append({'user': message['user'],
+                                          'ts': message['ts']})
+    else:
+        raise Exception('Slack API returned error', history_raw['error'])
+
+    return history_processed
+
+def histogram_user_activity(history, users, ts_start, duration_in_days):
+    user_activity_dict = {}
+    for user_dict in users:
+        user_activity_dict[user_dict['user_id']] \
+            = [False for _ in range(duration_in_days)]
+
+    for message in history:
+        try:
+            day = int((float(message['ts']) - ts_start) / (3600 * 24))
+            user_activity_dict[message['user']][day] = True
+        except KeyError:
+            # Post from someone we're not tracking
+            pass
+
+    user_activity_hist = {u: sum(user_activity_dict[u])
+                          for u in user_activity_dict}
+
+    return user_activity_hist
 
 # Command line flags
 parser = argparse.ArgumentParser()
@@ -59,25 +105,28 @@ with open(args.output_channel_file) as output_channel_file:
 with open(args.user_file) as user_file:
     users = [user for user in csv.DictReader(user_file)]
 
-print(token)
-print(format_channel(input_channel))
-print(format_channel(output_channel))
-print(format_user(users[0]))
-
-# Should subclass tzinfo to flag the local times with Chicago
-# timezone.
-
-# Midnight last night, Chicago time, all the way back to
-# duration_in_days days before that
+# Calculate the timestamp start of measurement time, based on a 24-hour day and
+# based on accurate time on the host computer. Assumes no Daylight
+# Savings boundaries in the period of interest. Be warned!
+ts_now = time.time()
 now = datetime.datetime.now()
-end_of_period = datetime.datetime(now.year, now.month, now.day)
-start_of_period = end_of_period - datetime.timedelta(days = duration_in_days)
-
-# Need to convert these to UNIX time to ship to Slack
+last_night_midnight = datetime.datetime(now.year, now.month, now.day)
+ts_end = int(ts_now - (now - last_night_midnight).total_seconds())
+ts_start = ts_end - duration_in_days * 24 * 3600
 
 # Slack API call to get history
+message_history = get_message_history(token,
+                                      input_channel['channel_id'],
+                                      ts_start,
+                                      ts_end)
 
 # Histogram messages, chunking by day
+message_histogram = histogram_user_activity(message_history,
+                                            users,
+                                            ts_start,
+                                            duration_in_days)
+
+print(message_histogram)
 
 # Sort by message count; build text histogram; list the non-participants
 print("On how many of the last", duration_in_days,
