@@ -11,24 +11,17 @@
 # monitor. Similarly, output_channel.csv should have a header and the
 # line for the file you want to send the report to.
 
-import urllib.request
-import urllib.parse
+import slack_api
 import csv
 import sys
-import json
 
 token = input().strip()
-token_encoded = urllib.parse.urlencode({'token': token}).encode()
-response = urllib.request.urlopen('https://slack.com/api/channels.list',
-                                  data = token_encoded)
 
-channel_list = json.loads(response.read().decode())
+channel_list = slack_api.call_slack('channels.list',
+                                    {'token': token})
+
 channel_list_writer = csv.writer(sys.stdout)
 
 channel_list_writer.writerow(['channel_id', 'channel_name'])
-
-if channel_list['ok']:
-    for channel in channel_list['channels']:
-        channel_list_writer.writerow([channel['id'], channel['name']])
-else:
-    raise Exception('Slack API returned error', channel_list['error'])
+for channel in channel_list['channels']:
+    channel_list_writer.writerow([channel['id'], channel['name']])
