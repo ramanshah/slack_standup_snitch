@@ -184,5 +184,4 @@ full_message = '\n'.join([introduction,
                           conclusion])
 
 # Slack API call to publish summary
-print(full_message)
-#post_message(token, output_channel['channel_id'], full_message, bot_name)
+post_message(token, output_channel['channel_id'], full_message, bot_name)
