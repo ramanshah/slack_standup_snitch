@@ -29,11 +29,11 @@ def format_channel(channel_dict):
                     channel_dict['channel_name'],
                     '>'])
 
-def format_user(user_dict):
+def format_user(user_id, user_name):
     return ''.join(['<@',
-                    user_dict['user_id'],
+                    user_id,
                     '|',
-                    user_dict['user_name'],
+                    user_name,
                     '>'])
 
 def get_message_history(token, channel, ts_start, ts_end):
@@ -65,8 +65,8 @@ def histogram_user_activity(history, users, ts_start, duration_in_days):
     # message history. The idea is to find the unique days on which
     # each user posted.
     user_activity_dict = {}
-    for user_dict in users:
-        user_activity_dict[user_dict['user_id']] \
+    for user_id in users:
+        user_activity_dict[user_id] \
             = [False for _ in range(duration_in_days)]
 
     for message in history:
@@ -126,7 +126,8 @@ with open(args.output_channel_file) as output_channel_file:
     output_channel = next(csv.DictReader(output_channel_file))
 
 with open(args.user_file) as user_file:
-    users = [user for user in csv.DictReader(user_file)]
+    users = {user['user_id']: user['user_name']
+             for user in csv.DictReader(user_file)}
 
 # Calculate the timestamp start of measurement time, based on a 24-hour day and
 # based on accurate time on the host computer. Assumes no Daylight
@@ -159,7 +160,9 @@ print("On how many of the last", duration_in_days,
 print('```')
 print('```')
 
-print(', '.join(map(format_user, users)) + ', we miss you.')
+formatted_users = [format_user(user_id, users[user_id]) for user_id in users]
+
+print(', '.join(formatted_users) + ', we miss you.')
 
 # Slack API call to publish summary
 # post_message(token, output_channel['channel_id'], summary_text, bot_name)
