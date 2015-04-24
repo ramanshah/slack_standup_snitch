@@ -17,6 +17,8 @@
 import urllib.request
 import urllib.parse
 import json
+
+import slack_api
 import time
 import datetime
 import csv
@@ -38,26 +40,16 @@ def format_user(user_id, user_name):
 
 def get_message_history(token, channel, ts_start, ts_end):
     # 1000 messages is the maximum allowed by the API.
-    arguments = urllib.parse.urlencode({'token': token,
+    history_raw = slack_api.call_slack('channels.history',
+                                       {'token': token,
                                         'channel': channel,
                                         'latest': ts_end,
                                         'oldest': ts_start,
-                                        'count': 1000}).encode()
-    response = urllib.request.urlopen('https://slack.com/api/channels.history',
-                                      data = arguments)
+                                        'count': 1000})
 
-    history_raw = json.loads(response.read().decode())
-    history_processed = []
-
-    if history_raw['ok']:
-        for message in history_raw['messages']:
-            if message['type'] == 'message':
-                history_processed.append({'user': message['user'],
-                                          'ts': message['ts']})
-    else:
-        raise Exception('Slack API returned error', history_raw['error'])
-
-    return history_processed
+    return [{'user': message['user'], 'ts': message['ts']}
+            for message in history_raw['messages']
+            if message['type'] == 'message']
 
 def aggregate_activity(history, users, ts_start, duration_in_days):
     # For each user, have a list of duration_in_days False
@@ -204,4 +196,5 @@ full_message = '\n'.join([introduction,
                           conclusion])
 
 # Slack API call to publish summary
-post_message(token, output_channel['channel_id'], full_message, bot_name)
+print(full_message)
+#post_message(token, output_channel['channel_id'], full_message, bot_name)
