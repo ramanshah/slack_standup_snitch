@@ -82,6 +82,10 @@ def aggregate_activity(history, users, ts_start, duration_in_days):
 
     return user_activity_hist
 
+def introduction(input_channel, duration_in_days):
+    fmt_string = "On how many of the last {:d} days did you check in on {:s}?"
+    return fmt_string.format(duration_in_days, format_channel(input_channel))
+
 def ascii_bar(username, frequency, username_width, frequency_width):
     format_string = ''.join(['{:>',
                              str(frequency_width),
@@ -90,10 +94,6 @@ def ascii_bar(username, frequency, username_width, frequency_width):
                              '}'])
 
     return format_string.format('+' * frequency, username)
-
-def introduction(input_channel, duration_in_days):
-    fmt_string = "On how many of the last {:d} days did you check in on {:s}?"
-    return fmt_string.format(duration_in_days, format_channel(input_channel))
 
 def sort_and_histogram(frequencies, users, duration_in_days):
     frequencies_decreasing = sorted(frequencies.items(),
