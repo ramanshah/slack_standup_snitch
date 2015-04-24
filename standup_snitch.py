@@ -60,6 +60,10 @@ def get_message_history(token, channel, ts_start, ts_end):
     return history_processed
 
 def histogram_user_activity(history, users, ts_start, duration_in_days):
+    # For each user, have a list of duration_in_days False
+    # values. Then idempotently turn these flags to True based on the
+    # message history. The idea is to find the unique days on which
+    # each user posted.
     user_activity_dict = {}
     for user_dict in users:
         user_activity_dict[user_dict['user_id']] \
