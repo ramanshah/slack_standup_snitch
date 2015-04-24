@@ -82,6 +82,28 @@ def aggregate_activity(history, users, ts_start, duration_in_days):
 
     return user_activity_hist
 
+def ascii_bar(username, frequency, username_width, frequency_width):
+    format_string = ''.join(['{:>',
+                             str(frequency_width),
+                             '} {:<',
+                             str(username_width),
+                             '}'])
+
+    return format_string.format('+' * frequency, username)
+
+def sort_and_histogram(frequencies, users, duration_in_days):
+    frequencies_decreasing = sorted(frequencies.items(),
+                                    key = lambda x: x[1],
+                                    reverse = True)
+
+    longest_username = max(map(len, users.values()))
+
+    return '\n'.join([ascii_bar(users[user_id],
+                                frequency,
+                                longest_username,
+                                duration_in_days)
+                      for user_id, frequency in frequencies_decreasing])
+
 def post_message(token, channel, text, bot_name):
     arguments = urllib.parse.urlencode({'token': token,
                                         'channel': channel,
@@ -144,13 +166,19 @@ message_history = get_message_history(token,
                                       ts_start,
                                       ts_end)
 
-# Histogram messages, chunking by day
+# Calculate how many days each user posted
 frequencies = aggregate_activity(message_history,
                                  users,
                                  ts_start,
                                  duration_in_days)
 
-print(frequencies)
+# Sort these frequencies in decreasing order and make an ASCII histogram
+text_histogram = sort_and_histogram(frequencies, users, duration_in_days)
+
+for user in users:
+    print(users[user])
+
+print(text_histogram)
 
 # Sort by message count; build text histogram; list the non-participants
 print("On how many of the last", duration_in_days,
