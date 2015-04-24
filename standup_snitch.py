@@ -11,7 +11,8 @@
 #                                  -d 14 \
 #                                  -i input_channel.csv \
 #                                  -o output_channel.csv \
-#                                  -u users.csv
+#                                  -u users.csv \
+#                                  -b SnitchBot
 
 import urllib.request
 import urllib.parse
@@ -77,6 +78,21 @@ def histogram_user_activity(history, users, ts_start, duration_in_days):
 
     return user_activity_hist
 
+def post_message(token, channel, text, bot_name):
+    arguments = urllib.parse.urlencode({'token': token,
+                                        'channel': channel,
+                                        'text': text,
+                                        'username': bot_name}).encode()
+    response = urllib.request.urlopen('https://slack.com/api/chat.postMessage',
+                                      data = arguments)
+
+    result = json.loads(response.read().decode())
+
+    if result['ok']:
+        return
+    else:
+        raise Exception('Slack API returned error', result['error'])
+
 # Command line flags
 parser = argparse.ArgumentParser()
 parser.add_argument('-t', '--token_file', help = 'file with API token')
@@ -87,8 +103,11 @@ parser.add_argument('-i', '--input_channel_file',
 parser.add_argument('-o', '--output_channel_file',
                     help = 'file with Slack channel to write to')
 parser.add_argument('-u', '--user_file', help = 'file with user list')
+parser.add_argument('-b', '--bot_name', help = 'display name of bot')
 args = parser.parse_args()
+
 duration_in_days = args.duration
+bot_name = args.bot_name
 
 # Read configuration from the specified files
 with open(args.token_file) as token_file:
@@ -139,3 +158,4 @@ print('```')
 print(', '.join(map(format_user, users)) + ', we miss you.')
 
 # Slack API call to publish summary
+# post_message(token, output_channel['channel_id'], summary_text, bot_name)
