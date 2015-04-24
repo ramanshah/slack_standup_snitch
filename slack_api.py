@@ -19,4 +19,4 @@ def call_slack(command, arg_dict):
     if results['ok']:
         return results
     else:
-        raise SlackApiError(results['error'])
+        raise SlackAPIError(results['error'])
