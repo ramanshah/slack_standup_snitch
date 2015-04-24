@@ -14,10 +14,6 @@
 #                                  -u users.csv \
 #                                  -b SnitchBot
 
-import urllib.request
-import urllib.parse
-import json
-
 import slack_api
 import time
 import datetime
@@ -112,19 +108,11 @@ def conclusion(frequencies, users):
         return ', '.join(tag_items)
 
 def post_message(token, channel, text, bot_name):
-    arguments = urllib.parse.urlencode({'token': token,
-                                        'channel': channel,
-                                        'text': text,
-                                        'username': bot_name}).encode()
-    response = urllib.request.urlopen('https://slack.com/api/chat.postMessage',
-                                      data = arguments)
-
-    result = json.loads(response.read().decode())
-
-    if result['ok']:
-        return
-    else:
-        raise Exception('Slack API returned error', result['error'])
+    slack_api.call_slack('chat.postMessage',
+                         {'token': token,
+                          'channel': channel,
+                          'text': text,
+                          'username': bot_name})
 
 # Command line flags
 parser = argparse.ArgumentParser()
