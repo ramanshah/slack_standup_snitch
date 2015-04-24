@@ -196,11 +196,12 @@ text_histogram = sort_and_histogram(frequencies, users, duration_in_days)
 # Call out non-posters or congratulate the team
 conclusion = conclusion(frequencies, users)
 
-print(introduction)
-print('```')
-print(text_histogram)
-print('```')
-print(conclusion)
+# Assemble the full_message
+full_message = '\n'.join([introduction,
+                          '```',
+                          text_histogram,
+                          '```',
+                          conclusion])
 
 # Slack API call to publish summary
-# post_message(token, output_channel['channel_id'], summary_text, bot_name)
+post_message(token, output_channel['channel_id'], full_message, bot_name)
