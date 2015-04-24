@@ -59,7 +59,7 @@ def get_message_history(token, channel, ts_start, ts_end):
 
     return history_processed
 
-def histogram_user_activity(history, users, ts_start, duration_in_days):
+def aggregate_activity(history, users, ts_start, duration_in_days):
     # For each user, have a list of duration_in_days False
     # values. Then idempotently turn these flags to True based on the
     # message history. The idea is to find the unique days on which
@@ -145,12 +145,12 @@ message_history = get_message_history(token,
                                       ts_end)
 
 # Histogram messages, chunking by day
-message_histogram = histogram_user_activity(message_history,
-                                            users,
-                                            ts_start,
-                                            duration_in_days)
+frequencies = aggregate_activity(message_history,
+                                 users,
+                                 ts_start,
+                                 duration_in_days)
 
-print(message_histogram)
+print(frequencies)
 
 # Sort by message count; build text histogram; list the non-participants
 print("On how many of the last", duration_in_days,
