@@ -91,6 +91,10 @@ def ascii_bar(username, frequency, username_width, frequency_width):
 
     return format_string.format('+' * frequency, username)
 
+def introduction(input_channel, duration_in_days):
+    fmt_string = "On how many of the last {:d} days did you check in on {:s}?"
+    return fmt_string.format(duration_in_days, format_channel(input_channel))
+
 def sort_and_histogram(frequencies, users, duration_in_days):
     frequencies_decreasing = sorted(frequencies.items(),
                                     key = lambda x: x[1],
@@ -103,6 +107,17 @@ def sort_and_histogram(frequencies, users, duration_in_days):
                                 longest_username,
                                 duration_in_days)
                       for user_id, frequency in frequencies_decreasing])
+
+def conclusion(frequencies, users):
+    non_posters = [user_id for user_id in frequencies
+                   if frequencies[user_id] == 0]
+
+    if len(non_posters) == 0:
+        return 'Go team!'
+    else:
+        tag_items = [format_user(user_id, users[user_id])
+                     for user_id in non_posters] + ['we miss you.']
+        return ', '.join(tag_items)
 
 def post_message(token, channel, text, bot_name):
     arguments = urllib.parse.urlencode({'token': token,
@@ -172,25 +187,20 @@ frequencies = aggregate_activity(message_history,
                                  ts_start,
                                  duration_in_days)
 
+# Preamble
+introduction = introduction(input_channel, duration_in_days)
+
 # Sort these frequencies in decreasing order and make an ASCII histogram
 text_histogram = sort_and_histogram(frequencies, users, duration_in_days)
 
-for user in users:
-    print(users[user])
+# Call out non-posters or congratulate the team
+conclusion = conclusion(frequencies, users)
 
+print(introduction)
+print('```')
 print(text_histogram)
-
-# Sort by message count; build text histogram; list the non-participants
-print("On how many of the last", duration_in_days,
-      "days did you check in on", format_channel(input_channel) + "?",
-      "\n")
-
 print('```')
-print('```')
-
-formatted_users = [format_user(user_id, users[user_id]) for user_id in users]
-
-print(', '.join(formatted_users) + ', we miss you.')
+print(conclusion)
 
 # Slack API call to publish summary
 # post_message(token, output_channel['channel_id'], summary_text, bot_name)
