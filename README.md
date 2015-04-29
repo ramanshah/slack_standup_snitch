@@ -31,7 +31,7 @@ times.
 
    ```
    python3 list_channels.py < api_token.txt > input_channel.csv
-   python3 list_channels.py < api_token.txt > output_channel.csv
+   cp input_channel.csv output_channel.csv
    ```
 
    Manually remove all but two lines from each file:

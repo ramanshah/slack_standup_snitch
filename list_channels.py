@@ -4,7 +4,7 @@
 # IDs.
 #
 # Usage: python3 list_channels.py < api_token.txt > input_channel.csv
-#        python3 list_channels.py < api_token.txt > output_channel.csv
+#        cp input_channel.csv output_channel.csv
 #
 # Remove all but two lines from each file: input_channel.csv should
 # have a header and the line for the channel you want to
