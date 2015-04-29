@@ -7,9 +7,9 @@
 #        python3 list_channels.py < api_token.txt > output_channel.csv
 #
 # Remove all but two lines from each file: input_channel.csv should
-# have a header and the line for the file you want to
+# have a header and the line for the channel you want to
 # monitor. Similarly, output_channel.csv should have a header and the
-# line for the file you want to send the report to.
+# line for the channel you want to send the report to.
 
 import slack_api
 import csv

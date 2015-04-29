@@ -8,7 +8,7 @@
 #     inactive users.
 #
 # Usage: python3 standup_snitch.py -t api_token.txt \
-#                                  -d 14 \
+#                                  -d 7 \
 #                                  -i input_channel.csv \
 #                                  -o output_channel.csv \
 #                                  -u users.csv \
