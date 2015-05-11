@@ -45,7 +45,9 @@ def get_message_history(token, channel, ts_start, ts_end):
 
     return [{'user': message['user'], 'ts': message['ts']}
             for message in history_raw['messages']
-            if message['type'] == 'message']
+            if (message['type'] == 'message' and
+                'user' in message and
+                'ts' in message)]
 
 def aggregate_activity(history, users, ts_start, duration_in_days):
     # For each user, have a list of duration_in_days False
