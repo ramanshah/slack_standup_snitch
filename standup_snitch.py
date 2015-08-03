@@ -127,10 +127,13 @@ parser.add_argument('-o', '--output_channel_file',
                     help = 'file with Slack channel to write to')
 parser.add_argument('-u', '--user_file', help = 'file with user list')
 parser.add_argument('-b', '--bot_name', help = 'display name of bot')
+parser.add_argument('-r', '--dry_run', action = 'store_true',
+                    help = 'flag to dry-run results to standard output')
 args = parser.parse_args()
 
 duration_in_days = args.duration
 bot_name = args.bot_name
+dry_run = args.dry_run
 
 # Read configuration from the specified files
 with open(args.token_file) as token_file:
@@ -186,4 +189,7 @@ full_message = '\n'.join([introduction,
                           conclusion])
 
 # Slack API call to publish summary
-post_message(token, output_channel['channel_id'], full_message, bot_name)
+if dry_run:
+    print(full_message)
+else:
+    post_message(token, output_channel['channel_id'], full_message, bot_name)
