@@ -54,6 +54,11 @@ python3 standup_snitch.py -t api_token.txt \
 Configure as you see fit; name the bot creatively; put it in a
 crontab; and take good care of your people!
 
+## Other features
+
+`-r`: Dry-run the `standup_snitch` report to standard output instead
+of sending it to Slack.
+
 ## Philosophy
 
 I am releasing this with trepidation because I know it's going to be
