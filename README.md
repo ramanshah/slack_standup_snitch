@@ -59,6 +59,16 @@ crontab; and take good care of your people!
 `-r`: Dry-run the `standup_snitch` report to standard output instead
 of sending it to Slack.
 
+## Adding and removing users
+
+You can manually maintain `users.csv` or add and remove users with
+included `bash` scripts, which will create a file `users.csv.new`,
+show you the proposed changes, and prompt you to verify the changes
+before applying them.
+
+* `bash add_user.sh users.csv new_user_name api_token.txt`
+* `bash remove_user.sh users.csv user_to_remove`
+
 ## Philosophy
 
 I am releasing this with trepidation because I know it's going to be
