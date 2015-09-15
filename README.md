@@ -42,6 +42,8 @@ times.
 
 ## How to use
 
+### Typical use
+
 I run the bot from my work computer each Monday morning:
 ```
 python3 standup_snitch.py -t api_token.txt \
@@ -54,17 +56,20 @@ python3 standup_snitch.py -t api_token.txt \
 Configure as you see fit; name the bot creatively; put it in a
 crontab; and take good care of your people!
 
-## Other features
+### Other features
 
-`-r`: Dry-run the `standup_snitch` report to standard output instead
+* `-r`: Dry-run the `standup_snitch` report to standard output instead
 of sending it to Slack.
 
-## Adding and removing users
+### Maintaining the user list
 
-You can manually maintain `users.csv` or add and remove users with
-included `bash` scripts, which will create a file `users.csv.new`,
-show you the proposed changes, and prompt you to verify the changes
-before applying them.
+You can manually maintain `users.csv` to add users (running
+`list_users.py` and merging the lists) and remove users (deleting
+lines from `users.csv`). However, since internships, vacations, and
+normal turnover means that the set of active users changes frequently,
+two `bash` scripts are included to make these tasks easier. Each
+script creates a file `users.csv.new`, shows you the proposed changes,
+and prompts you to verify the changes before applying them.
 
 * `bash add_user.sh users.csv new_user_name api_token.txt`
 * `bash remove_user.sh users.csv user_to_remove`
